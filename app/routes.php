@@ -32,10 +32,10 @@ Route::post('referral', array('as'=> 'referral', 'uses'=> 'AuthController@postre
 
 
 // Tale routes
-Route::get('new', 'TaleController@showNew');
+//Route::get('new', 'TaleController@showNew');
 Route::post('new', 'TaleController@postNew');
 
-Route::get('continue', 'TaleController@showContinue');
+//Route::get('continue', 'TaleController@showContinue');
 Route::post('continue', 'TaleController@postContinue');
 
 Route::get('refusal/{id}', array('as'=> 'refusal', 'uses'=> 'TaleController@refusal'));

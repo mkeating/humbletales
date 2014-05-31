@@ -2,18 +2,7 @@
 
 class TaleController extends BaseController{
 
-	public function showNew()
-		{
-
-			if(Auth::check())
-			{
-				return View::make('tale/new');
-			}
-			else{
-				return Redirect::to('login');
-			}
-			
-		}
+	
 
 		public function postNew()
 		{
@@ -126,36 +115,6 @@ class TaleController extends BaseController{
 			return Redirect::to('new')->withErrors($validator)->withInput();
 		}
 
-	public function showContinue()
-		{
-
-			if(Auth::check())
-			{
-
-				//get this user's current tale
-				$current_tale_id = Auth::user()->current_tale;
-				$title = DB::table('tales')
-								->where('id', $current_tale_id)
-								->first();
-				$current_tale = DB::table('users_tales')
-										->where('tale_id', $current_tale_id)
-										->orderBy('section', 'asc')
-										->get();
-				$content = '';
-
-				foreach($current_tale as $value){
-					$content =  $content.$value->content;
-				}
-
-				$last_section = end($current_tale)->section;
-
-				return View::make('tale/continue', array('title'=> $title->title, 'content'=> $content, 'section'=> $last_section));
-			}
-			else{
-				return Redirect::to('login');
-			}
-			
-		}
 
 	public function postContinue()
 	{
@@ -246,13 +205,13 @@ class TaleController extends BaseController{
 				}
 
 				//success
-				return Redirect::to('');
+				return Redirect::to('/');
 
 			}
 			else{
 
 				//validation error
-				return Redirect::to('continue')->withErrors($validator)->withInput();
+				return Redirect::to('/')->withErrors($validator)->withInput();
 
 			}
 		}
@@ -324,6 +283,7 @@ class TaleController extends BaseController{
 				}
 				else{
 
+					/* NOT YET IMPLEMENTED
 					//user doesnt exist
 
 						//insert story chunk
@@ -347,16 +307,18 @@ class TaleController extends BaseController{
 								
 							    $message->to($data['email'])->subject($data['name2'].' wants to write with you!');
 							});
+							*/
+					echo "user doesnt exist";
 
 				}
 
 					//success
-					return Redirect::to('');
+					return Redirect::to('/');
 
 			}
 			else{
 				//validation error
-				return Redirect::to('continue')->withErrors($validator)->withInput();
+				return Redirect::to('/')->withErrors($validator)->withInput();
 			}
 
 			

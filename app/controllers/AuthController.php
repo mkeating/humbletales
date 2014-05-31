@@ -42,7 +42,7 @@ class AuthController extends BaseController{
 			if (Auth::attempt($userdata))
 			{
 				//redirect
-				return Redirect::to('secret')->with('message','you have logged in');
+				return Redirect::to('/')->with('message','you have logged in');
 			}
 			else
 			{
@@ -155,7 +155,7 @@ class AuthController extends BaseController{
 			if (Auth::attempt($userdata))
 			{
 				//redirect
-				return Redirect::to('')->with('message','you have logged in');
+				return Redirect::to('/')->with('message','you have logged in');
 			}
 			else
 			{
@@ -166,7 +166,7 @@ class AuthController extends BaseController{
 			}
 		}
 		//validation error
-		return Redirect::to('login')->withErrors($validator)->withInput(Input::except('password'));
+		return Redirect::to('/')->withErrors($validator)->withInput(Input::except('password'));
 
 	}
 

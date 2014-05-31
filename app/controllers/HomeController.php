@@ -15,13 +15,54 @@ class HomeController extends BaseController {
 	|
 	*/
 
-	public function showWelcome()
-	{
-		return View::make('hello');
-	}
 
 	public function showHome()
 	{
+
+		//if logged in user
+		if(Auth::check())
+		{
+			//get this user's current tale
+			$current_tale_id = Auth::user()->current_tale;
+			
+			//if user has a current tale (showContinue)
+			if($current_tale_id != NULL){
+
+					$title		 = DB::table('tales')
+								->where('id', $current_tale_id)
+								->first();
+
+					$current_tale = DB::table('users_tales')
+											->where('tale_id', $current_tale_id)
+											->orderBy('section', 'asc')
+											->get();
+					$content = '';
+
+					foreach($current_tale as $value){
+						$content =  $content.$value->content;
+					}
+
+					
+					$last_section = end($current_tale)->section;
+					
+
+					return View::make('home/home', array('title'=> $title->title, 'content'=> $content, 'section'=> $last_section));
+				}				
+
+			//if user has no current tale (showNew)
+			else
+			{
+				return View::make('home/home');
+			}
+
+
+		}
+		//no logged in user
+		else
+		{
+			return View::make('home/home');
+		}
+
 		return View::make('home/home');
 	}
 

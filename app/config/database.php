@@ -55,7 +55,7 @@ return array(
 		'mysql' => array(
 			'driver'    => 'mysql',
 			'host'      => 'localhost',
-			'database'  => 'humbletales',
+			'database'  => 'mkeat_ht',
 			'username'  => 'root',
 			'password'  => '',
 			'charset'   => 'utf8',
