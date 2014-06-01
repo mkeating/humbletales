@@ -10,7 +10,9 @@
 		</ul>
 	@endif
 
-	{{ Form::open(array('url' => 'referal')) }}
+	<?php echo $id; ?>
+
+	{{ Form::open(array('url' => 'referral')) }}
 
 		<p>
 			{{ Form::label('name', 'Name:') }}<br />

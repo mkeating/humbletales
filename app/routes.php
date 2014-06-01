@@ -27,8 +27,8 @@ Route::post('login', 'AuthController@postLogin');
 Route::get('logout', array('as'=> 'logout', 'uses'=> 'AuthController@getLogout'));
 
 	///refer
-Route::get('referral/{id}', array('as'=> 'referral', 'uses'=> 'AuthController@showreferral'));
-Route::post('referral', array('as'=> 'referral', 'uses'=> 'AuthController@postreferral'));
+Route::get('referral/{id}', array('as'=> 'referral', 'uses'=> 'AuthController@showReferral'));
+Route::post('referral', array('as'=> 'referral', 'uses'=> 'AuthController@postReferral'));
 
 
 // Tale routes

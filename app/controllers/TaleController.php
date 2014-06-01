@@ -73,16 +73,16 @@ class TaleController extends BaseController{
 							});
 						
 					}
-					else{
-						//user doesnt exist
 
+					//user doesnt exist
+					else{
+						
 						//create the new tale and get its ID
 						$new_tale_id = DB::table('tales')
 							->insertGetId(array(
 								'title'				=> $taledata['title'],
 								'current_section'	=> 2)
-								
-								);
+						);						
 
 						//insert story chunk
 						DB::table('users_tales')->insert(

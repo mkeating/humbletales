@@ -71,7 +71,7 @@ class AuthController extends BaseController{
 			'name'			=> Input::get('name'),
 			'email'			=> Input::get('email'),
 			'password'		=> Input::get('password'),
-			'current_tale'	=> Input::get('next_id')
+			'current_tale'	=> intval(Input::get('next_id'))
 		);
 
 		//rules for validation
@@ -79,7 +79,6 @@ class AuthController extends BaseController{
 			'name'		=>'Required',
 			'email'		=>'Required',
 			'password'	=>'Required',
-			'next_id'	=>'Required'
 			);
 
 		//validate inputs
@@ -88,20 +87,27 @@ class AuthController extends BaseController{
 		if($validator->passes())
 		{
 			//sign user up
-			User::create(array(
+		
+			DB::table('users')->insert(array(
 				'name'			=> $userdata['name'],
 				'email'			=> $userdata['email'],
 				'password'		=> Hash::make($userdata['password']),
 				'current_tale'	=> $userdata['current_tale']
 				));
+			
+
+			$logindata = array(
+				'name'			=> Input::get('name'),
+				'email'			=> Input::get('email'),
+				'password'		=> Input::get('password'),
+			);
 
 			//login the new user
-			//unset($userdata['name']);
 
-			if (Auth::attempt($userdata))
+			if (Auth::attempt($logindata))
 			{
 				//redirect
-				return Redirect::to('secret')->with('message','you have logged in');
+				return Redirect::to('/')->with('message','you have logged in');
 			}
 			else
 			{
@@ -113,7 +119,8 @@ class AuthController extends BaseController{
 
 		}
 		//validation error
-		return Redirect::to('signup')->withErrors($validator)->withInput(Input::except('password'));
+		//return Redirect::to('signup')->withErrors($validator)->withInput(Input::except('password'));
+		echo "Validation errors!";
 	}
 
 
