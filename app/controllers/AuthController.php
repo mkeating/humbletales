@@ -19,9 +19,9 @@ class AuthController extends BaseController{
 
 		//rules for validation
 		$rules = array(
-			'name'		=>'Required',
-			'email'		=>'Required',
-			'password'	=>'Required'
+			'name'		=>'required|unique:users',
+			'email'		=>'required|email|unique:users',
+			'password'	=>'required'
 			);
 
 		//validate inputs
@@ -37,8 +37,6 @@ class AuthController extends BaseController{
 				));
 
 			//login the new user
-			//unset($userdata['name']);
-
 			if (Auth::attempt($userdata))
 			{
 				//redirect
@@ -47,15 +45,15 @@ class AuthController extends BaseController{
 			else
 			{
 				//redirect back to login
+				//this shouldnt ever happen; unnecessary?
 				return Redirect::to('login')
 					->withErrors(array('email'=>'wrong email','password'=>'wrong password'))
 					->withInput(Input::except('password'));
 			}
 
-
 		}
 		//validation error
-		return Redirect::to('signup')->withErrors($validator)->withInput(Input::except('password'));
+		return Redirect::to('/')->withErrors($validator)->withInput(Input::except('password'));
 	}
 
 	public function showReferral($id)
@@ -76,9 +74,9 @@ class AuthController extends BaseController{
 
 		//rules for validation
 		$rules = array(
-			'name'		=>'Required',
-			'email'		=>'Required',
-			'password'	=>'Required',
+			'name'		=>'required|unique:users',
+			'email'		=>'required|email|unique:users',
+			'password'	=>'required'
 			);
 
 		//validate inputs
@@ -111,6 +109,7 @@ class AuthController extends BaseController{
 			}
 			else
 			{
+				// FIX LATER
 				//redirect back to login
 				return Redirect::to('login')
 					->withErrors(array('email'=>'wrong email','password'=>'wrong password'))
@@ -119,8 +118,8 @@ class AuthController extends BaseController{
 
 		}
 		//validation error
-		//return Redirect::to('signup')->withErrors($validator)->withInput(Input::except('password'));
-		echo "Validation errors!";
+		return Redirect::to('referral/'.$userdata['current_tale'])->withErrors($validator)->withInput(Input::except('password'));
+		
 	}
 
 
@@ -131,7 +130,7 @@ class AuthController extends BaseController{
 		if(Auth::check())
 		{
 			//redirect
-			return Redirect::to('secret');
+			return Redirect::to('/');
 		}
 
 		//show the login page
@@ -141,7 +140,6 @@ class AuthController extends BaseController{
 	public function postLogin()
 	{
 		//get inputs
-
 		$userdata = array(
 			'email'		=> Input::get('email'),
 			'password'	=> Input::get('password')
@@ -149,8 +147,8 @@ class AuthController extends BaseController{
 
 		//declare rules for validation
 		$rules = array(
-			'email'		=> 'Required',
-			'password'	=> 'Required'
+			'email'		=> 'required|email',
+			'password'	=> 'required'
 			);
 
 		//validate inputs
@@ -167,20 +165,17 @@ class AuthController extends BaseController{
 			else
 			{
 				//redirect back to login
-				return Redirect::to('login')
-					->withErrors(array('email'=>'wrong email','password'=>'wrong password'))
-					->withInput(Input::except('password'));
+				return Redirect::to('login')->with('message', 'email/password incorrect')->withInput(Input::except('password'));
 			}
 		}
 		//validation error
-		return Redirect::to('/')->withErrors($validator)->withInput(Input::except('password'));
-
+		return Redirect::to('login')->withErrors($validator)->withInput(Input::except('password'));
 	}
 
 	public function getLogout()
 	{
 		Auth::logout();
 
-		return Redirect::to('login');
+		return Redirect::to('/');
 	}
 }

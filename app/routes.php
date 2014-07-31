@@ -38,7 +38,7 @@ Route::post('new', 'TaleController@postNew');
 //Route::get('continue', 'TaleController@showContinue');
 Route::post('continue', 'TaleController@postContinue');
 
-Route::get('refusal/{id}', array('as'=> 'refusal', 'uses'=> 'TaleController@refusal'));
+Route::get('refusal/{id}/{secret}', array('as'=> 'refusal', 'uses'=> 'TaleController@refusal'));
 
 // Library routes
 Route::get('library', 'LibraryController@showLibrary');

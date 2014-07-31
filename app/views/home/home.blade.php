@@ -40,17 +40,19 @@
 			@if ($errors->has())
 				<ul>
 					{{ $errors->first('email', '<li>:message</li>') }}
-					{{ $errors->first('password', '<li>:message</li>') }}
+					{{ $errors->first('emailNext', '<li>:message</li>') }}
 				</ul>
 			@endif
 
 			<strong><?php echo $title; ?></strong>
+			<br/>
+			<br/>
 			<strong><?php echo $content; ?></strong>
 
 
 			@if ($section == 3)
 
-				{{ Form::open(array('url' => '/')) }}
+				{{ Form::open(array('url' => 'continue')) }}
 
 
 					<p>
@@ -68,13 +70,16 @@
 			@else
 			
 
-				{{ Form::open(array('url' => '/')) }}
+
+				{{ Form::open(array('url' => 'continue')) }}
 
 
+					@if (Auth::user()->been_refused != 1)
 					<p>
 						{{ Form::label('content', 'Content:') }}<br />
 						{{ Form::textarea('content', Input::old('content')) }}
 					</p>
+					@endif
 
 					<p>
 						{{ Form::label('emailNext', 'Email for the next person:') }}<br />
@@ -96,8 +101,8 @@
 
 			@if ($errors->has())
 				<ul>
-					{{ $errors->first('email', '<li>:message</li>') }}
-					{{ $errors->first('password', '<li>:message</li>') }}
+					{{ $errors->first('title', '<li>:message</li>') }}
+					{{ $errors->first('emailNext', '<li>:message</li>') }}
 				</ul>
 			@endif
 
@@ -132,11 +137,13 @@
 	@else
 
 		<h1>Welcome to HumbleTales!</h1>
+		<h2>Asychronous, sequential, collaborative short fiction. It's like the Telephone game kinda.</h2>
 
 		<h1>Sign Up</h1>
 
 			@if ($errors->has())
 				<ul>
+					{{ $errors->first('name', '<li>:message</li>') }}
 					{{ $errors->first('email', '<li>:message</li>') }}
 					{{ $errors->first('password', '<li>:message</li>') }}
 				</ul>

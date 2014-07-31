@@ -8,6 +8,7 @@
 			{{ $errors->first('email', '<li>:message</li>') }}
 			{{ $errors->first('password', '<li>:message</li>') }}
 		</ul>
+		
 	@endif
 
 	

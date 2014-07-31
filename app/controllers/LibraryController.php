@@ -5,7 +5,9 @@ class LibraryController extends BaseController{
 	public function showLibrary()
 	{
 		//get all tales
-		$tales = DB::table('tales')->get();
+		$tales = DB::table('tales')
+					->where('current_section', 4)
+					->get();
 		//print_r($tales);
 		return View::make('library/library', array('tales' => $tales));
 	}
