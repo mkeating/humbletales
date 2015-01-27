@@ -28,7 +28,8 @@ class TaleController extends BaseController{
 					//find next user
 					$next_user = DB::table('users')->where('email', $taledata['emailNext'])->first();
 
-					$secret = substr(urlencode(Hash::make(str_random(24))), 0, 24);
+					//$secret = substr(urlencode(Hash::make(str_random(24))), 0, 24);
+					$secret = str_random(11);
 
 					//user exists
 					if($next_user){
@@ -182,7 +183,8 @@ class TaleController extends BaseController{
 				'content'	=> Input::get('content'),
 			);
 
-			$secret = substr(urlencode(Hash::make(str_random(24))), 0, 24);
+			//$secret = substr(urlencode(Hash::make(str_random(24))), 0, 24);
+			$secret = str_random(11);
 
 			//rules for validation
 			$rules = array(
@@ -270,7 +272,8 @@ class TaleController extends BaseController{
 				'emailNext'	=> Input::get('emailNext')
 			);
 
-			$secret = substr(urlencode(Hash::make(str_random(24))), 0, 24);
+			//$secret = substr(urlencode(Hash::make(str_random(24))), 0, 24);
+			$secret = str_random(11);
 
 			//rules for validation
 			//currently assumes next user already exists
@@ -361,12 +364,17 @@ class TaleController extends BaseController{
 				else{
 					//user doesnt exist
 
+					//set this user's current tale to NULL
+					DB::table('users')
+						->where('id', Auth::user()->id)
+						->update(array('current_tale'=> NULL));
+
 					//send referral email
 						$data = array(
 							'email'		=> $taledata['emailNext'],
 							'name2'		=> Auth::user()->name,
 							'ref_email'	=> Auth::user()->email,
-							'id'		=> $new_tale_id,
+							'id'		=> $current_tale_id,
 							'secret'	=> $secret
 						); 
 
@@ -390,17 +398,31 @@ class TaleController extends BaseController{
 
 	public function refusal($id, $secret){
 
+		/*//print_r(end($current_tale)->secret);
+			echo("<br>");
+			print_r(urlencode($secret));
+			echo("<br>");
+			//print_r($current_tale);
+			echo("<br>");
+			echo "woops";
+		*/
+		
 		//get the tale sections with the id in question
-
 		$current_tale = DB::table('users_tales')
 								->where('tale_id', $id)
 								->orderBy('section', 'asc')
 								->get();
 
+		$title = DB::table('tales')
+							->where('id', $id)
+							->first();						
 
 		// this is a legit refusal link
-		if(end($current_tale)->secret == urlencode($secret)){
+		if(end($current_tale)->secret == $secret){
 
+
+			echo("match");
+			
 			
 			//find last user in this tale
 				$last_user_id = end($current_tale)->user_id;
@@ -429,6 +451,7 @@ class TaleController extends BaseController{
 				$data = array(
 							'email'		=> $last_user->email,
 							'name1'		=> $last_user->name,
+							'title'		=> $title->title,
 						);
 
 						Mail::send('emails.refused', $data, function($message) use ($data)
@@ -440,17 +463,17 @@ class TaleController extends BaseController{
 			return View::make('auth/thanks');
 		}
 
-		//dnot a legit refusal link
+		//not a legit refusal link
 		else{
-			print_r(end($current_tale)->secret);
+			print_r( end($current_tale)->secret);
 			echo("<br>");
-			print_r(urlencode($secret));
+			print_r( $secret);
 			echo("<br>");
 			print_r($current_tale);
 			echo("<br>");
 			echo "woops";
 		}	
-		
+	
 
 	}
 

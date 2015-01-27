@@ -7,7 +7,7 @@
 		Hi <?php echo $name1; ?>, 
 
 		<div>
-			<?php echo $name2; ?> would like you to continue their story. Log in at {{ URL::to('/') }} to start writing!
+			<?php echo $name2; ?> would like you to continue their story. Log in at {{ URL::to('/login') }} to start writing!
 
 			Don't feel like it? Click here to refuse: {{ URL::to('/refusal/'.$id.'/'.$secret)}}
 
