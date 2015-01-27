@@ -22,6 +22,8 @@ class HomeController extends BaseController {
 		//if logged in user
 		if(Auth::check())
 		{
+
+			
 			//get this user's current tale
 			$current_tale_id = Auth::user()->current_tale;
 			
@@ -44,15 +46,16 @@ class HomeController extends BaseController {
 
 					
 					$last_section = end($current_tale)->section;
-					
+					$greeting = "Hi, ".Auth::user()->name.". You have a story to work on!";
 
-					return View::make('home/home', array('title'=> $title->title, 'content'=> $content, 'section'=> $last_section));
+					return View::make('home/home', array('title'=> $title->title, 'content'=> $content, 'section'=> $last_section, 'greeting'=> $greeting));
 				}				
 
 			//if user has no current tale (showNew)
 			else
 			{
-				return View::make('home/home');
+				$greeting = "Hi, ".Auth::user()->name;
+				return View::make('home/home', array('greeting'=> $greeting));
 			}
 
 

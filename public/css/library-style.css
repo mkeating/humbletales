@@ -1,0 +1,27 @@
+
+.content{
+	
+	height:100%;
+}
+
+.authors{
+	font-size: 2em;
+	height: 100%;
+
+}
+
+.auth1.mousedOver{
+	color:red;
+}
+
+.auth2.mousedOver{
+	color:blue;
+}
+
+.auth3.mousedOver{
+	color:green;
+}
+
+.auth4.mousedOver{
+	color:orange;
+}

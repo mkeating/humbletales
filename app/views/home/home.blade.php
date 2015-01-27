@@ -2,6 +2,8 @@
 
 @section('content')
 
+	
+
 	@if(Auth::check())
 	<!-- if logged in user -->
 
@@ -31,113 +33,118 @@
 		  </div><!-- /.container-fluid -->
 		</nav>
 
-		<!-- if logged in user has a current tale -->
+		
+		<div class="greeting"><?php echo $greeting; ?></div>
+		<div class="workspace">
 
-		@if(Auth::user()->current_tale != NULL)
+				<!-- if logged in user has a current tale -->
+				@if(Auth::user()->current_tale != NULL)
 
-			<h1>Continue the Tale</h1>
+					<h1>Continue the Tale</h1>
 
-			@if ($errors->has())
-				<ul>
-					{{ $errors->first('email', '<li>:message</li>') }}
-					{{ $errors->first('emailNext', '<li>:message</li>') }}
-				</ul>
-			@endif
-
-			<strong><?php echo $title; ?></strong>
-			<br/>
-			<br/>
-			<strong><?php echo $content; ?></strong>
-
-
-			@if ($section == 3)
-
-				{{ Form::open(array('url' => 'continue')) }}
-
-
-					<p>
-						{{ Form::label('content', 'Content:') }}<br />
-						{{ Form::textarea('content', Input::old('content')) }}
-					</p>
-
-					<p>
-						{{ Form::submit('Finish the Tale') }}
-					</p>
-
-				{{ Form::close() }}
-
-			
-			@else
-			
-
-
-				{{ Form::open(array('url' => 'continue')) }}
-
-
-					@if (Auth::user()->been_refused != 1)
-					<p>
-						{{ Form::label('content', 'Content:') }}<br />
-						{{ Form::textarea('content', Input::old('content')) }}
-					</p>
+					@if ($errors->has())
+						<ul>
+							{{ $errors->first('email', '<li>:message</li>') }}
+							{{ $errors->first('emailNext', '<li>:message</li>') }}
+						</ul>
 					@endif
 
-					<p>
-						{{ Form::label('emailNext', 'Email for the next person:') }}<br />
-						{{ Form::text('emailNext', Input::old('emailNext')) }}
-					</p>
-
-					<p>
-						{{ Form::submit('Send it along') }}
-					</p>
-
-				{{ Form::close() }}
-				
-			@endif
-
-		<!-- if logged in user has no current tale, display Start a new tale -->
-		@else
-
-		<h1>Start a new Tale</h1>
-
-			@if ($errors->has())
-				<ul>
-					{{ $errors->first('title', '<li>:message</li>') }}
-					{{ $errors->first('emailNext', '<li>:message</li>') }}
-				</ul>
-			@endif
-
-			{{ Form::open(array('url' => 'new')) }}
-
-				<p>
-					{{ Form::label('title', 'Title:') }}<br />
-					{{ Form::text('title', Input::old('title')) }}
-				</p>
-
-				<p>
-					{{ Form::label('content', 'Content:') }}<br />
-					{{ Form::textarea('content', Input::old('content')) }}
-				</p>
-
-				<p>
-					{{ Form::label('emailNext', 'Email for the next person:') }}<br />
-					{{ Form::text('emailNext', Input::old('emailNext')) }}
-				</p>
-
-				<p>
-					{{ Form::submit('Send it along') }}
-				</p>
-
-			{{ Form::close() }}
+					<div class="title"><?php echo $title; ?></div>
+					<br/>
+					<br/>
+					<div class="content"><?php echo $content; ?></div>
 
 
-		@endif
+					@if ($section == 3)
+
+						{{ Form::open(array('url' => 'continue')) }}
 
 
+							<p>
+								{{ Form::label('content', 'Content:') }}<br />
+								{{ Form::textarea('content', Input::old('content')) }}
+							</p>
+
+							<p>
+								{{ Form::submit('Finish the Tale') }}
+							</p>
+
+						{{ Form::close() }}
+
+					
+					@else
+					
+
+
+						{{ Form::open(array('url' => 'continue')) }}
+
+
+							@if (Auth::user()->been_refused != 1)
+							<p>
+								{{ Form::label('content', 'Content:') }}<br />
+								{{ Form::textarea('content', Input::old('content')) }}
+							</p>
+							@endif
+
+							<p>
+								{{ Form::label('emailNext', 'Email for the next person:') }}<br />
+								{{ Form::text('emailNext', Input::old('emailNext')) }}
+							</p>
+
+							<p>
+								{{ Form::submit('Send it along') }}
+							</p>
+
+						{{ Form::close() }}
+						
+					@endif
+
+				<!-- if logged in user has no current tale, display Start a new tale -->
+				@else
+
+				<h1>Start a new Tale</h1>
+
+					@if ($errors->has())
+						<ul>
+							{{ $errors->first('title', '<li>:message</li>') }}
+							{{ $errors->first('emailNext', '<li>:message</li>') }}
+						</ul>
+					@endif
+
+					{{ Form::open(array('url' => 'new')) }}
+
+						<p>
+							{{ Form::label('title', 'Title:') }}<br />
+							{{ Form::text('title', Input::old('title')) }}
+						</p>
+
+						<p>
+							{{ Form::label('content', 'Content:') }}<br />
+							{{ Form::textarea('content', Input::old('content')) }}
+						</p>
+
+						<p>
+							{{ Form::label('emailNext', 'Email for the next person:') }}<br />
+							{{ Form::text('emailNext', Input::old('emailNext')) }}
+						</p>
+
+						<p>
+							{{ Form::submit('Send it along') }}
+						</p>
+
+					{{ Form::close() }}
+
+
+				@endif
+		</div>
+	
 	<!--if no logged in user -->
 	@else
 
 		<h1>Welcome to HumbleTales!</h1>
-		<h2>Asychronous, sequential, collaborative short fiction. It's like the Telephone game kinda.</h2>
+		<h2>Asychronous, sequential, collaborative short fiction. It's like the Telephone game.</h2>
+		<h3><a href="library">Read some stories</a></h3>
+		<h3><a href="login">Login</a></h3>
 
 		<h1>Sign Up</h1>
 
@@ -171,12 +178,9 @@
 				</p>
 
 			{{ Form::close() }}
-
-		<a href='login'>Login</a>
-		<a href='library'>Library</a>
-		<a href='logout'>Logout</a>
+		
 	@endif
-
+	
 
 
 @endsection

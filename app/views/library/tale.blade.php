@@ -1,7 +1,16 @@
 @extends('layouts.default')
 
+@section('head')
+
+{{ HTML::style('/css/library-style.css') }}
+
+@endsection
+
 
 @section('content')
+
+	
+
 
 	<nav class="navbar navbar-default" role="navigation">
 		  <div class="container-fluid">
@@ -27,15 +36,26 @@
 		  </div><!-- /.container-fluid -->
 		</nav>
 
-	<h1><?php echo $title ?></h1>
+		<div class="workspace">
 
-	<div class='content'>
-		<?php echo $content ?>
-	</div>
-	<br>
-	<br>
-	<div class='authors'>
-		<?php echo $author ?>
-	</div>
+			<h1><?php echo $title ?></h1>
+			<div class="row">
+				<div class="content col-lg-10 col-md-10 col-sm-12 col-xs-12">
+					<?php echo $content ?>
+				</div>
+				<br>
+				<br>
+				<div class="authors col-lg-2 col-md-2 col-sm-12 col-xs-12">
+					<?php echo $author ?>
+				</div>
+			</div>
+
+		</div>
 	
+@endsection
+
+@section('scripts')
+
+{{ HTML::script('/js/tale.js') }}
+
 @endsection

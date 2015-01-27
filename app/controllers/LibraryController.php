@@ -29,11 +29,12 @@ class LibraryController extends BaseController{
 		foreach($tale as $value)
 		{
 			$content = $content.'<span class="auth'.$count.'">'.$value->content.'</span>';
-			$count++;
+			
 			$user = DB::table('users')
 				->where('id', $value->user_id)
 				->first();
 			$authors = $authors.'<span class="auth'.$count.'">'.$user->name.'</span><br>';	
+			$count++;
 		}
 
 		return View::make('library/tale', 
