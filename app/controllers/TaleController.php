@@ -2,7 +2,8 @@
 
 class TaleController extends BaseController{
 
-	
+		
+		
 
 		public function postNew()
 		{
@@ -47,6 +48,9 @@ class TaleController extends BaseController{
 							->update(array('current_tale' => $new_tale_id));
 
 
+						// REFUSAL STATES //
+
+
 						//skip this if its a post-refusal submission
 						if (Auth::user()->been_refused != 1)
 						{
@@ -63,9 +67,11 @@ class TaleController extends BaseController{
 						}
 						else{
 							//reset been_refused
-							DB::table('users')->update(
-								array( 'been_refused'	=> 0
-									));
+
+
+							DB::table('users')
+								->where('id', Auth::user()->id)
+								->update(array('been_refused'=> NULL));
 
 							//insert story chunk
 							DB::table('users_tales')->insert(
@@ -104,6 +110,9 @@ class TaleController extends BaseController{
 								'current_section'	=> 2)
 						);						
 
+
+						// REFUSAL STATES //
+
 						//skip this if its a post-refusal submission
 						if (Auth::user()->been_refused != 1)
 						{
@@ -118,9 +127,9 @@ class TaleController extends BaseController{
 						}
 						else{
 							//reset been_refused
-							DB::table('users')->update(
-								array( 'been_refused'	=> 0
-									));
+							DB::table('users')
+								->where('id', Auth::user()->id)
+								->update(array('been_refused'=> NULL));
 
 							//insert story chunk
 						DB::table('users_tales')->insert(
@@ -161,6 +170,8 @@ class TaleController extends BaseController{
 	public function postContinue()
 	{
 
+
+
 		//get this user's current tale
 			$current_tale_id = Auth::user()->current_tale;
 			$current_tale = DB::table('users_tales')
@@ -172,6 +183,7 @@ class TaleController extends BaseController{
 							->select('title')
 							->first();
 			$last_section = end($current_tale)->section;
+
 
 			
 
@@ -276,7 +288,7 @@ class TaleController extends BaseController{
 			$secret = str_random(11);
 
 			//rules for validation
-			//currently assumes next user already exists
+			
 			$rules = array(
 				//'content'	=>'Required',
 				'emailNext'	=>'required|email'
@@ -290,6 +302,9 @@ class TaleController extends BaseController{
 				//skip this if its a post-refusal submission
 				if (Auth::user()->been_refused != 1)
 					{
+						//not a refusal
+						// REFUSAL STATES //
+
 						//insert story chunk
 						DB::table('users_tales')->insert(
 							array(	'user_id'	=> Auth::user()->id,
@@ -298,32 +313,39 @@ class TaleController extends BaseController{
 									'section'	=> $last_section + 1 ,
 									'secret'	=> $secret
 							));
+
+						//remove secret from last section
+							DB::table('users_tales')
+								->where('section', $last_section)
+								->update(array('secret'=> NULL));
+
+
+							//update the tale's current section
+							DB::table('tales')
+								->where('id', $current_tale_id)
+								->update(array('current_section'=> $last_section + 1));
 					}
 						else{
+
+							//a refusal
 							//reset been_refused
-							DB::table('users')->update(
-								array( 'been_refused'	=> 0
-									));
+							$chunk_id = DB::table('users_tales')
+											->where('tale_id', $current_tale_id)
+											->where('section', $last_section)
+											->select('user_tale_id')	
+											->first();
+
+						
+							DB::table('users')
+								->where('id', Auth::user()->id)
+								->update(array('been_refused'=> NULL));
+
 
 							//update this story chunk with a new secret
-						DB::table('users_tales')
-							->where(array('tale_id'		=>$current_tale_id,
-											'section'	=> $last_section))
-							->update(
-							array(	'secret'	=> $secret
-							));
+							DB::table('users_tales')
+										->where('user_tale_id', $chunk_id->user_tale_id)
+										->update(array(	'secret'=> $secret));
 					}
-
-				//remove secret from last section
-				DB::table('users_tales')
-					->where('section', $last_section)
-					->update(array('secret'=> NULL));
-
-
-				//update the tale's current section
-				DB::table('tales')
-					->where('id', $current_tale_id)
-					->update(array('current_section'=> $last_section + 1));
 
 
 				//find next user
@@ -353,8 +375,6 @@ class TaleController extends BaseController{
 							'id'		=> $current_tale_id,
 							'secret'	=> $secret
 						);
-
-						print_r($next_user);
 
 						Mail::send('emails.pass', $data, function($message) use ($data)
 							{
