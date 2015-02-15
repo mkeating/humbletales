@@ -2,6 +2,15 @@
 
 class TaleController extends BaseController{
 
+	/* ////////////// TO DO //////////////
+
+	 1) prevent assigning story to occupied user
+	 2) implement story queue (eliminates need for #1)
+	 3) implement feedback messages throughout ("Your story has been sent!", etc)
+	 4) general refactoring
+
+	 ////////////////////////////////////*/
+
 		
 		
 
@@ -29,7 +38,7 @@ class TaleController extends BaseController{
 					//find next user
 					$next_user = DB::table('users')->where('email', $taledata['emailNext'])->first();
 
-					//$secret = substr(urlencode(Hash::make(str_random(24))), 0, 24);
+					//make a secret to validate refusals
 					$secret = str_random(11);
 
 					//user exists
@@ -417,15 +426,6 @@ class TaleController extends BaseController{
 	}
 
 	public function refusal($id, $secret){
-
-		/*//print_r(end($current_tale)->secret);
-			echo("<br>");
-			print_r(urlencode($secret));
-			echo("<br>");
-			//print_r($current_tale);
-			echo("<br>");
-			echo "woops";
-		*/
 		
 		//get the tale sections with the id in question
 		$current_tale = DB::table('users_tales')
@@ -484,6 +484,9 @@ class TaleController extends BaseController{
 		}
 
 		//not a legit refusal link
+
+		//TODO: make a view for this
+		
 		else{
 			print_r( end($current_tale)->secret);
 			echo("<br>");

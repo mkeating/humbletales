@@ -9,51 +9,27 @@ class AuthController extends BaseController{
 
 	public function postSignup()
 	{
-
 		//get inputs
-		$userdata = array(
-			'name'		=> Input::get('name'),
-			'email'		=> Input::get('email'),
-			'password'	=> Input::get('password')
-		);
+		$userdata = Input::except('_token');
 
-		//rules for validation
-		$rules = array(
-			'name'		=>'required|unique:users',
-			'email'		=>'required|email|unique:users',
-			'password'	=>'required'
-			);
+		$form = new SignUpForm($userdata);
 
-		//validate inputs
-		$validator = Validator::make($userdata, $rules);
-
-		if($validator->passes())
-		{
-			//sign user up
-			User::create(array(
-				'name'			=> $userdata['name'],
-				'email'			=> $userdata['email'],
-				'password'		=> Hash::make($userdata['password']),
-				));
-
-			//login the new user
-			if (Auth::attempt($userdata))
-			{
-				//redirect
-				return Redirect::to('/')->with('message','you have logged in');
-			}
-			else
-			{
-				//redirect back to login
-				//this shouldnt ever happen; unnecessary?
-				return Redirect::to('login')
-					->withErrors(array('email'=>'wrong email','password'=>'wrong password'))
-					->withInput(Input::except('password'));
-			}
-
+		if ($form->isInvalid()){
+			return Redirect::to('/')->withErrors($form->getValidation())->withInput(Input::except('password'));
 		}
-		//validation error
-		return Redirect::to('/')->withErrors($validator)->withInput(Input::except('password'));
+
+		$user = $form->createUser();
+
+		$user->save();
+
+		if(Auth::loginUsingID($user->id))
+		{
+			return Redirect::to('/');
+		}
+		else{
+			echo 'woops';
+		}
+	
 	}
 
 	public function showReferral($id)
@@ -65,64 +41,48 @@ class AuthController extends BaseController{
 	public function postReferral()
 	{
 		//get inputs
-		$userdata = array(
-			'name'			=> Input::get('name'),
-			'email'			=> Input::get('email'),
-			'password'		=> Input::get('password'),
-			'current_tale'	=> intval(Input::get('next_id'))
-		);
-
-		//rules for validation
-		$rules = array(
-			'name'		=>'required|unique:users',
-			'email'		=>'required|email|unique:users',
-			'password'	=>'required'
-			);
-
-		//validate inputs
-		$validator = Validator::make($userdata, $rules);
-
-		if($validator->passes())
-		{
-			//sign user up
+		$userdata = Input::except('_token');
+		$userdata['current_tale'] = intval($userdata['current_tale']);
+		$current_tale = $userdata['current_tale'];
 		
-			DB::table('users')->insert(array(
-				'name'			=> $userdata['name'],
-				'email'			=> $userdata['email'],
-				'password'		=> Hash::make($userdata['password']),
-				'current_tale'	=> $userdata['current_tale']
-				));
-			
 
-			$logindata = array(
-				'name'			=> Input::get('name'),
-				'email'			=> Input::get('email'),
-				'password'		=> Input::get('password'),
-			);
+		//error checking for current_tale not existing, or if another user is already assigned to it
+		$already_assigned = DB::table('users')
+								->where('current_tale', $current_tale)
+								->get();
 
-			//login the new user
+		$tale_exists = DB::table('tales')
+						->where('id', $current_tale)
+						->get();
+		
+		if(/*$already_assigned or */!$tale_exists)
+		{	
+			//TODO: make a view
+			echo 'not a valid referral';
+		}
+		else{
 
-			if (Auth::attempt($logindata))
-			{
-				//redirect
-				return Redirect::to('/')->with('message','you have logged in');
+			$form = new SignUpForm($userdata);
+
+			if ($form->isInvalid()){
+				return Redirect::to('/')->withErrors($form->getValidation())->withInput(Input::except('password'));
 			}
-			else
+
+			$user = $form->createUser();
+
+			$user->save();
+
+			if(Auth::loginUsingID($user->id))
 			{
-				// FIX LATER
-				//redirect back to login
-				return Redirect::to('login')
-					->withErrors(array('email'=>'wrong email','password'=>'wrong password'))
-					->withInput(Input::except('password'));
+				return Redirect::to('/');
+			}
+			else{
+				echo 'woops';
 			}
 
 		}
-		//validation error
-		return Redirect::to('referral/'.$userdata['current_tale'])->withErrors($validator)->withInput(Input::except('password'));
 		
 	}
-
-
 
 	public function showLogin()
 	{
@@ -140,10 +100,7 @@ class AuthController extends BaseController{
 	public function postLogin()
 	{
 		//get inputs
-		$userdata = array(
-			'email'		=> Input::get('email'),
-			'password'	=> Input::get('password')
-			);
+		$userdata = Input::except('_token');
 
 		//declare rules for validation
 		$rules = array(
@@ -160,7 +117,7 @@ class AuthController extends BaseController{
 			if (Auth::attempt($userdata))
 			{
 				//redirect
-				return Redirect::to('/')->with('message','you have logged in');
+				return Redirect::to('/');
 			}
 			else
 			{

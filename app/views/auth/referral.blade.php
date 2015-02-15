@@ -28,7 +28,7 @@
 			{{ Form::label('password', 'Password:') }}<br />
 			{{ Form::password('password', Input::old('password')) }}
 		</p>
-			{{ Form::hidden('next_id',  $id) }}
+			{{ Form::hidden('current_tale',  $id) }}
 
 		<p>
 			{{ Form::submit('Sign Up') }}
