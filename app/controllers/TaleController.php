@@ -11,89 +11,70 @@ class TaleController extends BaseController{
 
 	 ////////////////////////////////////*/
 
-		
-		
-
 		public function postNew()
 		{
 			//get inputs
-			$taledata = array(
-				'title'		=> Input::get('title'),
-				'content'	=> Input::get('content'),
-				'emailNext'	=> Input::get('emailNext')
-			);
+			$taledata = Input::except('_token');
 
-			//rules for validation
-			$rules = array(
-				'title'		=>'required',
-				'emailNext'	=>'required|email'
-				);
+			$talemaker = new TaleMaker($taledata);
 
-			//validate inputs
-			$validator = Validator::make($taledata, $rules);
+			if ($talemaker->isInvalid())
+			{
+				return Redirect::to('/')->withErrors($validator)->withInput();
+			}
+
+			$tale = $talemaker->createTale();
+			$tale->save();
+			$new_tale_id = $tale->id;
 			
-			if($validator->passes())
-				{
+			//find next user
+			$next_user = DB::table('users')->where('email', $taledata['emailNext'])->first();
 
-					//find next user
-					$next_user = DB::table('users')->where('email', $taledata['emailNext'])->first();
+			//make a secret to validate refusals
+			$secret = str_random(11);
 
-					//make a secret to validate refusals
-					$secret = str_random(11);
-
-					//user exists
-					if($next_user){
-
-						//create the new tale and get its ID
-						$new_tale_id = DB::table('tales')
-							->insertGetId(array(
-								'title'				=> $taledata['title'],
-								'current_section'	=> 2)
+			$chunkdata = array(	  	
+									'user_id'	=> Auth::user()->id,
+									'tale_id'	=> $new_tale_id,
+									'content'	=> $taledata['content'],
+									'section'	=> 1,
+									'secret'	=> $secret
 								);
 
-						//set next user's current tale to this one
-						DB::table('users')
-							->where('email', $taledata['emailNext'])
+			$chunkmaker = new ChunkMaker($chunkdata);
+
+			if ($chunkmaker->isInvalid())
+			{
+				return Redirect::to('/')->withErrors($validator)->withInput();
+			}
+
+			$chunk = $chunkmaker->createChunk();
+			$chunk->save();
+
+			//user exists
+			if($next_user){
+
+				//set next user's current tale to this one
+				DB::table('users')
+							->where('id', $next_user->id)
 							->update(array('current_tale' => $new_tale_id));
 
 
-						// REFUSAL STATES //
-
-
-						//skip this if its a post-refusal submission
-						if (Auth::user()->been_refused != 1)
-						{
-
-
-							//insert story chunk
-							DB::table('users_tales')->insert(
-								array(	'user_id'	=> Auth::user()->id,
-										'tale_id'	=> $new_tale_id,
-										'content'	=> $taledata['content'],
-										'section'	=> 1,
-										'secret'	=> $secret
-									));
-						}
-						else{
-							//reset been_refused
-
-
-							DB::table('users')
+				// REFUSAL STATES //
+						
+				//post-refusal submission
+				if (Auth::user()->been_refused == 1)
+					{
+						//reset been_refused
+						DB::table('users')
 								->where('id', Auth::user()->id)
-								->update(array('been_refused'=> NULL));
+								->update(array('been_refused'=> NULL));	
+					}
 
-							//insert story chunk
-							DB::table('users_tales')->insert(
-								array(	'user_id'	=> Auth::user()->id,
-										'tale_id'	=> $new_tale_id,
-										'content'	=> $taledata['content'],
-										'section'	=> 1,
-										'secret'	=> $secret
-									));
-						}
-						//send email to next user
+				$chunk->save();
 
-						$data = array(
+				//send email to next user
+				$data = array(
 							'email'		=> $next_user->email,
 							'name1'		=> $next_user->name,
 							'name2'		=> Auth::user()->name,
@@ -107,52 +88,27 @@ class TaleController extends BaseController{
 							    $message->to($data['email'])->subject($data['name2'].' wants to write with you!');
 							});
 						
-					}
+			}
 
-					//user doesnt exist
-					else{
-						
-						//create the new tale and get its ID
-						$new_tale_id = DB::table('tales')
-							->insertGetId(array(
-								'title'				=> $taledata['title'],
-								'current_section'	=> 2)
-						);						
+			//user doesnt exist
+			else{
+											
+				// REFUSAL STATES //
 
-
-						// REFUSAL STATES //
-
-						//skip this if its a post-refusal submission
-						if (Auth::user()->been_refused != 1)
-						{
-						//insert story chunk
-						DB::table('users_tales')->insert(
-							array(	'user_id'	=> Auth::user()->id,
-									'tale_id'	=> $new_tale_id,
-									'content'	=> $taledata['content'],
-									'section'	=> 1 ,
-									'secret'	=> $secret
-							));
-						}
-						else{
-							//reset been_refused
-							DB::table('users')
+				//post-refusal submission
+				if (Auth::user()->been_refused == 1)
+				{
+					//reset been_refused
+					DB::table('users')
 								->where('id', Auth::user()->id)
 								->update(array('been_refused'=> NULL));
+				}
 
-							//insert story chunk
-						DB::table('users_tales')->insert(
-							array(	'user_id'	=> Auth::user()->id,
-									'tale_id'	=> $new_tale_id,
-									'content'	=> $taledata['content'],
-									'section'	=> 1 ,
-									'secret'	=> $secret
-							));
-						
-						}
+				//insert story chunk
+				$chunk->save();
 
-						//send referral email
-						$data = array(
+				//send referral email
+				$data = array(
 							'email'		=> $taledata['emailNext'],
 							'name2'		=> Auth::user()->name,
 							'ref_email'	=> Auth::user()->email,
@@ -160,26 +116,22 @@ class TaleController extends BaseController{
 							'secret'	=> $secret
 						); 
 
-						Mail::send('emails.referral', $data, function($message) use ($data)
+				Mail::send('emails.referral', $data, function($message) use ($data)
 							{
 								
 							    $message->to($data['email'])->subject($data['name2'].' wants to write with you!');
 							});
 
-					}						
+			}						
 
-					//success
-					return Redirect::to('/');
-				}
-			//validation error
-			return Redirect::to('/')->withErrors($validator)->withInput();
+			//success
+			return Redirect::to('/');
+			
 		}
 
 
 	public function postContinue()
 	{
-
-
 
 		//get this user's current tale
 			$current_tale_id = Auth::user()->current_tale;
@@ -192,9 +144,6 @@ class TaleController extends BaseController{
 							->select('title')
 							->first();
 			$last_section = end($current_tale)->section;
-
-
-			
 
 		//determine if story is at the final section
 		if ($last_section == 3)

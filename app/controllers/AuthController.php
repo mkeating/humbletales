@@ -14,7 +14,8 @@ class AuthController extends BaseController{
 
 		$form = new SignUpForm($userdata);
 
-		if ($form->isInvalid()){
+		if ($form->isInvalid())
+		{
 			return Redirect::to('/')->withErrors($form->getValidation())->withInput(Input::except('password'));
 		}
 
