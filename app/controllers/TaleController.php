@@ -49,6 +49,7 @@ class TaleController extends BaseController{
 			}
 
 			$chunk = $chunkmaker->createChunk();
+			//insert story chunk
 			$chunk->save();
 
 			//user exists
@@ -70,8 +71,6 @@ class TaleController extends BaseController{
 								->where('id', Auth::user()->id)
 								->update(array('been_refused'=> NULL));	
 					}
-
-				$chunk->save();
 
 				//send email to next user
 				$data = array(
@@ -103,9 +102,6 @@ class TaleController extends BaseController{
 								->where('id', Auth::user()->id)
 								->update(array('been_refused'=> NULL));
 				}
-
-				//insert story chunk
-				$chunk->save();
 
 				//send referral email
 				$data = array(
@@ -153,7 +149,6 @@ class TaleController extends BaseController{
 				'content'	=> Input::get('content'),
 			);
 
-			//$secret = substr(urlencode(Hash::make(str_random(24))), 0, 24);
 			$secret = str_random(11);
 
 			//rules for validation
@@ -242,7 +237,6 @@ class TaleController extends BaseController{
 				'emailNext'	=> Input::get('emailNext')
 			);
 
-			//$secret = substr(urlencode(Hash::make(str_random(24))), 0, 24);
 			$secret = str_random(11);
 
 			//rules for validation
