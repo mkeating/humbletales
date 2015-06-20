@@ -1,0 +1,53 @@
+body{
+	font-family: 'Raleway';
+	}
+
+h2{
+	font-size: 1em;
+	font-weight: 300;
+}
+
+input{
+	width: 100%;
+}
+
+.leftHome{
+	border: 1px solid gray;
+}
+
+.rightHome{
+
+	border: 1px solid gray;
+}
+
+.greeting{
+	font-family: 'Chango', cursive;
+	color: #CAB8A4;
+	font-size: 1em;
+}
+
+
+
+.navbar-default .navbar-brand{
+	color: white;
+	font-size: 1.5em;
+	margin: 10px;
+	font-family: 'Chango', cursive;
+}
+
+.navbar-default .navbar-nav li a{
+	color: white;
+	
+
+}
+
+.navbar-HT{
+
+	background-color: #6DB6BC;
+	
+}
+
+.navbar-toggle{
+	border:none;
+	border-radius: 0;
+}

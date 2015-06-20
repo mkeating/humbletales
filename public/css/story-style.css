@@ -1,0 +1,51 @@
+.workspace {
+
+	width:80%;
+	margin: 0 auto;
+	border: 1px solid #D98733;
+	/*font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;*/
+	padding:2em;
+	background-color: #FAF1D2;
+
+}
+
+.taleThumb{
+	border: 1px solid blue;
+	min-height: 5em;
+}
+
+h1{
+	color:#D98733;
+	font-weight: 600;
+}
+
+.storyTitle{
+
+	width: 100%;
+	font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+.storyContent{
+
+	width: 100%;
+	border: 1px solid #888888;
+	font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+.storyEmail{
+
+	width: 100%;
+	font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+.storySubmit{
+
+	border:none;
+	border-radius: 0;
+	background-color: #6DB6BC;
+	font-family: 'Raleway';
+	font-size: 2em;
+	font-weight: 600;
+	color: white;
+	width: 100%;
+}

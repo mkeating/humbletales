@@ -1,0 +1,35 @@
+/*
+#74AFAD  green
+#D98733  orange
+#22272A  dark grey
+#E7E7E5  light grey
+#FFFFFF  white
+*/
+
+html, body {
+	height: 100%;
+ 	background-color: #E7E7E5;
+ }
+
+ .container-fluid {
+    margin: 0 auto;
+    height: 100%;
+    padding: 0px 0;
+
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.row{
+	height: 100%;
+}
+
+.wrapper{
+
+	height: 100%;
+	padding: 1em;	
+	display: block;
+
+}
+ 
